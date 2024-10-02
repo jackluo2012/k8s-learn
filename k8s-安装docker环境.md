@@ -41,7 +41,7 @@ sudo tee /etc/docker/daemon.json <<-'EOF'
     "max-file": "100"
   },
   "insecure-registries": ["harbor.xinxianghf.com"],
-  "registry-mirrors": ["https://olmwsf82.mirror.aliyuncs.com"]
+  "registry-mirrors": ["https://docker.m.daocloud.io"]
 }
 EOF
 # 创建docker 启动的管理 目录 
@@ -51,3 +51,30 @@ mkdir -p /etc/systemd/system/docker.service.d
 sudo systemctl daemon-reload && systemctl restart docker && systemctl enable docker
 
 ```
+### 基本 Docker 模拟 pod
+```bash
+docker pull k8s.m.daocloud.io/pause:3.9
+docker run -d --name pause -p 8080:80  k8s.m.daocloud.io/pause:3.9
+docker ps
+
+# 编写 nginx 配置文件 
+cat <<EOF>> nginx.conf
+error_log stderr;
+events { worker_connections 1024;}
+http{
+    access_log /dev/stdout_combined;
+    server {
+        listen 80;
+        server_name localhost;
+        location / {
+            proxy_pass http://127.0.0.1:2368;
+        }
+    }
+}
+EOF
+
+docker run --name nginx -v `pwd`/nginx.conf:/etc/nginx/nginx.conf --net=container:pause --ipc=container:pause --pid=container:pause -d nginx
+
+docker run -d --name ghost --net=container:pause --ipc=container:pause --pid=container:pause ghost
+```
+
