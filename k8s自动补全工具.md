@@ -4,6 +4,9 @@
 yum install bash-completion -y
 source /usr/share/bash-completion/bash_completion
 source <(kubectl completion bash)
+vi .bashrc
+# 加入
+source <(kubectl completion bash)
 ```
 
 ```
