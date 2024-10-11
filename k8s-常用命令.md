@@ -18,7 +18,7 @@ kubectl logs --since=1h <pod-name> # 查看 Pod 最近 1 小时的日志
 kubectl logs <pod-name> > pod.log # 将 Pod 的日志输出到文件
 kubectl logs -l app=nginx # 查看带有特定标签的所有 Pod 的日志
 # 进入容器内部
-kubectl exec -it 
+kubectl exec -it task-pv-pod -- /bin/bash
 
 ```
 ### kubectl get pod
