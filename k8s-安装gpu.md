@@ -43,3 +43,24 @@ https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/getting-star
 ### 可参考中文 
 
 [text](https://www.lixueduan.com/posts/ai/02-gpu-operator/)
+
+```
+kubectl create ns gpu-operator
+kubectl label --overwrite ns gpu-operator pod-security.kubernetes.io/enforce=privileged
+```
+### 确定 NFD 是否已在集群中运行的一种方法是检查节点上的 NFD 标签
+```
+kubectl get nodes -o json | jq '.items[].metadata.labels | keys | any(startswith("feature.node.kubernetes.io"))
+```
+
+```
+helm repo add nvidia https://helm.ngc.nvidia.com/nvidia \
+    && helm repo update
+
+
+
+helm install --wait --generate-name \
+    -n gpu-operator --create-namespace \
+    nvidia/gpu-operator \
+    --set dcgmExporter.enabled=false    
+```
